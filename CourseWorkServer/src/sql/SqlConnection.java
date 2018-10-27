@@ -15,11 +15,16 @@ public class SqlConnection
 	 
 	 public SqlConnection()
 	 {
-		 url = "jdbs:mysql//localhost:3306/coursework";
+		 url = "jdbc:mysql://localhost:3306/coursework?serverTimezone=Europe/Moscow";
 		 user = "root";
-		 password = "root123";
+		 password = "root123"; 
+	 }
+	 
+	 public void insert(Lane[] lane) throws ClassNotFoundException
+	 {	 
 		 try 
 		 {
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			connect = DriverManager.getConnection(url,user,password);
 			stmt = connect.createStatement();
 		 } 
@@ -27,16 +32,12 @@ public class SqlConnection
 		 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		 }		 
-	 }
-	 
-	 public void insert(Lane[] lane)
-	 {	 
+		 }	
 		 for(Lane ln: lane)
 		 {
 			 try 
 			 {
-				stmt.executeQuery(ln.getInsertQuery());
+				stmt.executeUpdate(ln.getInsertQuery());
 			 } 
 			 catch (SQLException e) 
 			 {
