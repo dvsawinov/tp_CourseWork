@@ -29,13 +29,15 @@ public class Lane
 	
 	public String getInsertQuery()
 	{
-		return "INSERT INTO" + " coursework.lane " + "VALUES(" + 
+		return "INSERT INTO" + " coursework.lane( " + 
+				"name,volume,occupancy,speed,headway,gap,date)" +
+				"VALUES(" + 
 				"'" + this.name 		+ "'" + "," + 
 				"'" + this.volume 		+ "'" + "," +
 				"'" + this.occupancy 	+ "'" + "," + 
 				"'" + this.speed 		+ "'" + "," +
-				"'" + this.headway      + "'" + "," +
-				"'" + this.gap          + "'" + "," + 
+				"'" + this.headway		+ "'" + "," +
+				"'" + this.gap			+ "'" + "," + 
 				"'" + (new SimpleDateFormat("yyyy-MM-dd hh:MM:ss")
 						.format(this.date)) 
 				+ "'" +");";
