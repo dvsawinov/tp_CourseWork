@@ -1,9 +1,6 @@
 package sql;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Lane 
 {
@@ -13,7 +10,7 @@ public class Lane
 	float speed; // Скорость
 	float headway; // 
 	float gap; // Расстояние между машинами
-	Date date; // Дата фиксации измерений
+	String date; // Дата фиксации измерений
 	
 	public Lane(String[] str) throws ParseException
 	{
@@ -23,8 +20,7 @@ public class Lane
 		speed = Float.parseFloat(str[4].replace(',', '.'));
 		headway = Float.parseFloat(str[14].replace(',', '.'));
 		gap = Float.parseFloat(str[15].replace(',', '.'));
-		DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:MM:ss");
-		date = format.parse(str[16] +' '+ str[17]);	
+		date = str[16] +' '+ str[17];	
 	}
 	
 	public String getInsertQuery()
@@ -38,8 +34,6 @@ public class Lane
 				"'" + this.speed 		+ "'" + "," +
 				"'" + this.headway		+ "'" + "," +
 				"'" + this.gap			+ "'" + "," + 
-				"'" + (new SimpleDateFormat("yyyy-MM-dd hh:MM:ss")
-						.format(this.date)) 
-				+ "'" +");";
+				"'" + this.date         + "'" +");";
 	}
 }
