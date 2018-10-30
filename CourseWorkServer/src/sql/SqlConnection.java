@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class SqlConnection 
 {
@@ -20,8 +21,10 @@ public class SqlConnection
 		 password = "root123"; 
 	 }
 	 
-	 public void insert(Lane[] lane) throws ClassNotFoundException
+	 public void insert(ArrayList<Lane> lane) throws ClassNotFoundException, SQLException
 	 {	 
+		 String insertQuery = "INSERT INTO coursework.lane" + 
+				 "(name,volume,occupancy,speed,headway,gap,date)VALUES";
 		 try 
 		 {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -33,17 +36,27 @@ public class SqlConnection
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		 }	
-		 for(Lane ln: lane)
+		 for(int i=0;i<lane.size();i++)
 		 {
-			 try 
+			 insertQuery += lane.get(i).getInsertQuery();
+			 if(i==lane.size()-1)
 			 {
-				stmt.executeUpdate(ln.getInsertQuery());
-			 } 
-			 catch (SQLException e) 
-			 {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				 insertQuery += ";";
 			 }
+			 else 
+			 {
+				 insertQuery += ",";
+			 }			 
 		 }
+		 try 
+		 {
+			stmt.executeUpdate(insertQuery);
+		 } 
+		 catch (SQLException e) 
+		 {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		 }
+		 connect.close();
 	 }
 }

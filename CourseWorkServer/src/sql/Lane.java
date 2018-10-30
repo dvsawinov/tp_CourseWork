@@ -22,18 +22,16 @@ public class Lane
 		gap = Float.parseFloat(str[15].replace(',', '.'));
 		date = str[16] +' '+ str[17];	
 	}
-	
+
 	public String getInsertQuery()
 	{
-		return "INSERT INTO" + " coursework.lane( " + 
-				"name,volume,occupancy,speed,headway,gap,date)" +
-				"VALUES(" + 
+		return "(" + 
 				"'" + this.name 		+ "'" + "," + 
 				"'" + this.volume 		+ "'" + "," +
 				"'" + this.occupancy 	+ "'" + "," + 
 				"'" + this.speed 		+ "'" + "," +
 				"'" + this.headway		+ "'" + "," +
 				"'" + this.gap			+ "'" + "," + 
-				"'" + this.date         + "'" +");";
+				"'" + this.date         + "'" +")";
 	}
 }
