@@ -15,11 +15,14 @@ public class Server
 {
 	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException, SQLException
 	{
-		String filename = "C:\\Users\\Дмитрий\\Desktop\\Новая папка\\logdet07-11-11.log";
+		// Source log file
+		String filename = "D:\\CourseWork\\Logs\\logdet07-11-11.log";
 		File logFile = new File(filename);
 		if (logFile.exists())
 		{
+			//Get all lanes information from source file
 			ArrayList<Lane> InsertDB = parseLog(logFile);
+			//Insert the lanes into database
 			new SqlConnection().insert(InsertDB);
 		}
 		else
@@ -27,6 +30,8 @@ public class Server
 			System.out.println("File does not exist");
 		}
 	}
+	
+	//Read from file and add to ArrayList new Lane object
 	static ArrayList<Lane> parseLog(File file) throws ParseException, FileNotFoundException
 	{
 		ArrayList<Lane> lanes = new ArrayList<Lane>();

@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class SqlConnection 
 {
-	 String url; //адрес БД
-	 String user; //Логин БД
-	 String password; // Пароль к БД
+	 String url; //database's url
+	 String user; //Login from database
+	 String password; //Password from database
 	 Connection connect; 
 	 Statement stmt;
 	 
@@ -21,10 +21,12 @@ public class SqlConnection
 		 password = "root123"; 
 	 }
 	 
+	 // Get the insert query to database
 	 public void insert(ArrayList<Lane> lane) throws ClassNotFoundException, SQLException
 	 {	 
+		 //Query text
 		 String insertQuery = "INSERT INTO coursework.lane" + 
-				 "(name,volume,occupancy,speed,headway,gap,date)VALUES";
+				 "(name,occupancy,intensity,speed,distance,date)VALUES";
 		 try 
 		 {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -54,9 +56,9 @@ public class SqlConnection
 		 } 
 		 catch (SQLException e) 
 		 {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		 }
+		 stmt.close();
 		 connect.close();
 	 }
 }
