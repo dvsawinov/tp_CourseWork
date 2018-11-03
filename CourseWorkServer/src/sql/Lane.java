@@ -18,10 +18,9 @@ public class Lane
 		occupancy = Float.parseFloat(str[3].replace(',', '.'));
 		distance = Float.parseFloat(str[14].replace(',', '.'));
 		if(this.distance != 0 && this.occupancy != 0)
-		{
-			
-			speed = Float.parseFloat(str[5].replace(',', '.'));	
+		{	
 			intensity = 1/occupancy; 
+			speed = Float.parseFloat(str[5].replace(',', '.'));	
 		}
 		else
 		{

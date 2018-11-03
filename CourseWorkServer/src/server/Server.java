@@ -15,20 +15,25 @@ public class Server
 {
 	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException, SQLException
 	{
-		// Source log file
-		String filename = "D:\\CourseWork\\Logs\\logdet07-11-11.log";
-		File logFile = new File(filename);
-		if (logFile.exists())
+		System.out.println("Program is running");
+		// Source directory
+		File dir = new File("D://CourseWork//Logs");
+		if(dir.isDirectory())
 		{
-			//Get all lanes information from source file
-			ArrayList<Lane> InsertDB = parseLog(logFile);
-			//Insert the lanes into database
-			new SqlConnection().insert(InsertDB);
+			for(File item: dir.listFiles())
+			{
+				if(getFileExtension(item).equals("log"))
+				{
+					System.out.println("\n" + item.getName() + "Parsing in progress...");
+					//Get all lanes information from source file
+					ArrayList<Lane> InsertDB = parseLog(item);
+					//Insert the lanes into database
+					System.out.println(item.getName() + " Insertion in progress...");
+					new SqlConnection().insert(InsertDB);
+				}
+			}
 		}
-		else
-		{
-			System.out.println("File does not exist");
-		}
+		System.out.println("\n"+"Program completed");
 	}
 	
 	//Read from file and add to ArrayList new Lane object
@@ -50,5 +55,19 @@ public class Server
 		}
 		scan.close();
 		return lanes;
+	}
+	
+	//get the file extension :D 
+	static String getFileExtension(File file)
+	{
+		String fname = file.getName();
+		try
+		{
+			return fname.substring(fname.lastIndexOf(".") +1);
+		}
+		catch (Exception e)
+		{
+			return "";
+		}
 	}
 }
