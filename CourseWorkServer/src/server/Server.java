@@ -2,21 +2,27 @@ package server;
 
 import sql.Lane;
 import sql.SqlConnection;
-
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Server 
 {
-	public void main(String[] args) throws ParseException
+	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException, SQLException
 	{
-		String filename = args[0];
-		File checkExist = new File(filename);
-		if (checkExist.exists())
+		// Source log file
+		String filename = "D:\\CourseWork\\Logs\\logdet07-11-11.log";
+		File logFile = new File(filename);
+		if (logFile.exists())
 		{
-			Lane[] InsertDB = parseLog(filename);
+			//Get all lanes information from source file
+			ArrayList<Lane> InsertDB = parseLog(logFile);
+			//Insert the lanes into database
 			new SqlConnection().insert(InsertDB);
 		}
 		else
@@ -24,19 +30,25 @@ public class Server
 			System.out.println("File does not exist");
 		}
 	}
-	Lane[] parseLog(String filename) throws ParseException
+	
+	//Read from file and add to ArrayList new Lane object
+	static ArrayList<Lane> parseLog(File file) throws ParseException, FileNotFoundException
 	{
-		Lane[] lanes = null;
+		ArrayList<Lane> lanes = new ArrayList<Lane>();
 		String temp = null;
 		Pattern p = Pattern.compile("\\s+");
 		String[] laneInfo = null;
-		Scanner scan = new Scanner(filename);
-		for (int i=0; scan.hasNext(); i++)
+		Scanner scan = new Scanner(file);
+		while(scan.hasNext())
 		{
-			temp = scan.nextLine();		
-			laneInfo = p.split(temp);
-			lanes[i] = new Lane(laneInfo);
-		}	
+			temp = scan.nextLine();
+			if (temp.trim().length() != 0)
+			{	
+				laneInfo = p.split(temp);
+				lanes.add(new Lane(laneInfo));
+			}
+		}
+		scan.close();
 		return lanes;
 	}
 }
