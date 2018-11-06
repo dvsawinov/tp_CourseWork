@@ -44,6 +44,8 @@ import courseWorkClient.common.DataBaseInterface;
 import courseWorkClient.common.WrongTimeValues;
 import javax.swing.JCheckBox;
 
+import java.lang.Math;
+
 public class MainWindow extends JFrame {
 
 	private JPanel contentPane;
@@ -60,17 +62,18 @@ public class MainWindow extends JFrame {
 	private JPanel pNormalDep;
 	private JCheckBox chckbxChooseTime;
 
+
 	public static void main(String[] args)
 	{
-		EventQueue.invokeLater(new Runnable() 
+		EventQueue.invokeLater(new Runnable()
 		{
-			public void run() 
+			public void run()
 			{
-				try 
+				try
 				{
 					MainWindow frame = new MainWindow();
 					frame.setVisible(true);
-				} catch (Exception e) 
+				} catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -82,7 +85,7 @@ public class MainWindow extends JFrame {
 		initComponents();
 		createEvents();
 	}
-	
+
 	//*Initialize components of a frame**
 	void initComponents()
 	{
@@ -91,30 +94,30 @@ public class MainWindow extends JFrame {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
+
 		pDeps = new JPanel();
 		pDeps.setBackground(Color.GRAY);
 		pNormalDep = new JPanel();
 		pNormalDep.setBackground(Color.GRAY);
-		
-		
+
+
 		btnDep1 = new JButton("Dep1");
 		btnDep2 = new JButton("Dep2");
 		btnDep3 = new JButton("Dep3");
 		btnInterpol = new JButton("Interpol");
 		btnClear = new JButton("Clear");
-		
+
 		cmbbxChooseLane = new JComboBox<String>();
 		cmbbxChooseDate = new JComboBox<Date>();
 		cmbbxChooseTimeFirst = new JComboBox<Integer>();
 		cmbbxChooseTimeSecond = new JComboBox<Integer>();
 		fillComboBoxes();
-		
+
 		cmbbxChooseTimeFirst.setEnabled(false);
 		cmbbxChooseTimeSecond.setEnabled(false);
 		chckbxChooseTime = new JCheckBox("Choose time");
 
-		
+
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -171,12 +174,12 @@ public class MainWindow extends JFrame {
 		);
 		pDeps.setLayout(new BorderLayout(0, 0));
 		contentPane.setLayout(gl_contentPane);
-		
+
 	}
-	
+
 	//*Initialize events for a frame**
 	void createEvents()
-	{	
+	{
 		//*Event handler for pressing button Dep1**
 		btnDep1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -196,17 +199,17 @@ public class MainWindow extends JFrame {
 				dbInterface.disconnect();
 			}
 		});
-		
+
 		btnDep2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		
+
 		btnDep3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		
+
 		chckbxChooseTime.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (cmbbxChooseTimeFirst.isEnabled() == true)
@@ -221,9 +224,9 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-		
+
 	}
-	
+
 	//*Method that fills all combo boxes**
 	private void fillComboBoxes()
 	{
@@ -237,13 +240,13 @@ public class MainWindow extends JFrame {
 			while(rs.next()){cmbbxChooseLane.addItem(rs.getString(1));}
 			pstmt.close();
 			rs.close();
-			
+
 			pstmt = dbInterface.connect().prepareStatement(sql_dates);
 			rs = pstmt.executeQuery();
 			while(rs.next()){cmbbxChooseDate.addItem(rs.getDate(1));}
 			pstmt.close();
 			rs.close();
-			
+
 			for (int i = 1; i<=24; i++)
 			{
 				cmbbxChooseTimeFirst.addItem(i);
@@ -256,7 +259,7 @@ public class MainWindow extends JFrame {
 		}
 		dbInterface.disconnect();
 	}
-	
+
 	//*Method that builds sql query**
 	private String buildSqlQuery(String x, String y)
 	{
@@ -273,18 +276,18 @@ public class MainWindow extends JFrame {
 			return sql_query;
 		}
 	}
-	
+
 	//*Method that plots a graph**
 	private JFreeChart plotPoints(XYDataset dataset, String xAxis, String yAxis)
 	{
 		JFreeChart chart = ChartFactory.createScatterPlot(
-                "", 
-                xAxis, 
-                yAxis, 
+                "",
+                xAxis,
+                yAxis,
                 dataset
         );
 		XYPlot plot = chart.getXYPlot();
-		
+
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesPaint(0, Color.RED);
         renderer.setSeriesStroke(0, new BasicStroke(2.0f));
@@ -302,7 +305,7 @@ public class MainWindow extends JFrame {
 
 		return chart;
 	}
-	
+
 	//*Method that executes sql query and creates dataset from resultset**
 	private XYDataset getDataSet(String sql, DataBaseInterface dbInterface)
 	{
@@ -316,11 +319,11 @@ public class MainWindow extends JFrame {
 			pstmt.setString(2, cmbbxChooseDate.getSelectedItem().toString());
 			if (chckbxChooseTime.isSelected()==true)
 			{
-				long mlsc_t = (Integer)cmbbxChooseTimeFirst.getSelectedItem() * 3600000; 
+				long mlsc_t = (Integer)cmbbxChooseTimeFirst.getSelectedItem() * 3600000;
 				Time t1 = new Time(mlsc_t);
 				pstmt.setString(3, t1.toString());
-				mlsc_t = (Integer)cmbbxChooseTimeSecond.getSelectedItem() * 3600000; 
-				t1.setTime(mlsc_t);						
+				mlsc_t = (Integer)cmbbxChooseTimeSecond.getSelectedItem() * 3600000;
+				t1.setTime(mlsc_t);
 				pstmt.setString(4, t1.toString());
 			}
 
@@ -338,12 +341,40 @@ public class MainWindow extends JFrame {
 		{
 			ex.printStackTrace();
 		}
-		
+
 		catch(WrongTimeValues ex)
 		{
 			JOptionPane.showMessageDialog(null, "You have selected wrong time interval", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
 		return dataset;
 	}
-	
+
+	private double[][] Approximation(double[][] xyTable, int basis)
+	{
+		double[][] result = new double[basis][basis+1];
+
+		for (int i = 0; i < basis; i++)
+  		{
+    		for (int j = 0; j < basis; j++)
+    		{
+      			result[i][j] = 0;
+		    }
+  		}
+
+		for (int i = 0; i < basis; i++)
+  		{
+    		for (int j = 0; j < basis; j++)
+    		{
+      			double sumA = 0, sumB = 0;
+      			for (int k = 0; k < xyTable.length / 2; k++)
+      			{
+        			sumA += Math.pow(xyTable[0][k], i) * Math.pow(xyTable[0][k], j);
+        			sumB += xyTable[1][k] * Math.pow(xyTable[0][k], i);
+      			}
+      			result[i][j] = sumA;
+      			result[i][basis] = sumB;
+    		}
+  		}
+  		return result;
+	}
 }
