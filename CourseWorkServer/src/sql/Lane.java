@@ -5,26 +5,25 @@ import java.text.ParseException;
 public class Lane 
 {
 	String name; // Lane's name
+	float volume; // p
 	float occupancy; // Q
-	float intensity; // p
 	float speed; // V
-	float distance; // d
+	float distance; // d (headway)
 	String date; // date
 	
 	// Parse into new Lane object
 	public Lane(String[] str) throws ParseException
 	{
 		name = str[1];
-		occupancy = Float.parseFloat(str[3].replace(',', '.'));
+		volume = Float.parseFloat(str[2].replace(',', '.'));
+		occupancy = (float) (1000*Float.parseFloat(str[3].replace(',', '.'))/5.7);
 		distance = Float.parseFloat(str[14].replace(',', '.'));
-		if(this.distance != 0 && this.occupancy != 0)
+		if(distance != 0 && occupancy != 0)
 		{	
-			intensity = 1/occupancy; 
 			speed = Float.parseFloat(str[5].replace(',', '.'));	
 		}
 		else
 		{
-			intensity = 0;
 			speed = 0;
 		}
 		date = str[16] +' '+ str[17];	
@@ -35,8 +34,8 @@ public class Lane
 	{
 		return "(" + 
 				"'" + this.name 		+ "'" + "," + 
-				"'" + this.occupancy 	+ "'" + "," + 
-				"'" + this.intensity	+ "'" + "," + 
+				"'" + this.volume 		+ "'" + "," + 
+				"'" + this.occupancy	+ "'" + "," + 
 				"'" + this.speed 		+ "'" + "," +
 				"'" + this.distance		+ "'" + "," +				
 				"'" + this.date         + "'" +")";

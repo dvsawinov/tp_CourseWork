@@ -24,7 +24,7 @@ public class Server
 			{
 				if(getFileExtension(item).equals("log"))
 				{
-					System.out.println("\n" + item.getName() + "Parsing in progress...");
+					System.out.println("\n" + item.getName() + " Parsing in progress...");
 					//Get all lanes information from source file
 					ArrayList<Lane> InsertDB = parseLog(item);
 					//Insert the lanes into database
@@ -42,15 +42,13 @@ public class Server
 		ArrayList<Lane> lanes = new ArrayList<Lane>();
 		String temp = null;
 		Pattern p = Pattern.compile("\\s+");
-		String[] laneInfo = null;
 		Scanner scan = new Scanner(file);
 		while(scan.hasNext())
 		{
 			temp = scan.nextLine();
 			if (temp.trim().length() != 0)
 			{	
-				laneInfo = p.split(temp);
-				lanes.add(new Lane(laneInfo));
+				lanes.add(new Lane(p.split(temp)));
 			}
 		}
 		scan.close();
