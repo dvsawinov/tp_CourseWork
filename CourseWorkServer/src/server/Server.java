@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
+
 public class Server 
 {
-	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException, SQLException
+	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException, SQLException, JSONException
 	{
 		System.out.println("Program is running");
 		// Source directory
@@ -28,7 +30,7 @@ public class Server
 					//Get all lanes information from source file
 					ArrayList<Lane> InsertDB = parseLog(item);
 					//Insert the lanes into database
-					System.out.println(item.getName() + " Insertion in progress...");
+					System.out.println(item.getName() + " Inserting in progress...");
 					new SqlConnection().insert(InsertDB);
 				}
 			}
