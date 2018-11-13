@@ -42,6 +42,8 @@ import java.sql.Time;
 
 import courseWorkClient.common.DataBaseInterface;
 import courseWorkClient.common.WrongTimeValues;
+import courseWorkClient.common.ApproximationUnit;
+
 import javax.swing.JCheckBox;
 
 import java.lang.Math;
@@ -101,7 +103,7 @@ public class MainWindow extends JFrame {
 		pNormalDep.setBackground(Color.GRAY);
 
 
-		btnDep1 = new JButton("Dep1");
+		btnDep1 = new JButton("ОК");
 		btnDep2 = new JButton("Dep2");
 		btnDep3 = new JButton("Dep3");
 		btnInterpol = new JButton("Interpol");
@@ -124,7 +126,7 @@ public class MainWindow extends JFrame {
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addGap(27)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(pNormalDep, GroupLayout.DEFAULT_SIZE, 812, Short.MAX_VALUE)
+						.addComponent(pNormalDep, GroupLayout.DEFAULT_SIZE, 950, Short.MAX_VALUE)
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
@@ -132,12 +134,12 @@ public class MainWindow extends JFrame {
 									.addGap(10)
 									.addComponent(cmbbxChooseDate, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(cmbbxChooseTimeFirst, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(cmbbxChooseTimeSecond, GroupLayout.PREFERRED_SIZE, 48, GroupLayout.PREFERRED_SIZE)
+									.addComponent(cmbbxChooseTimeFirst, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE)
+									.addGap(12)
+									.addComponent(cmbbxChooseTimeSecond, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE)
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(chckbxChooseTime)
-									.addPreferredGap(ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 									.addComponent(btnDep1)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(btnDep2)
@@ -147,7 +149,7 @@ public class MainWindow extends JFrame {
 									.addComponent(btnInterpol)
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(btnClear))
-								.addComponent(pDeps, GroupLayout.DEFAULT_SIZE, 811, Short.MAX_VALUE))
+								.addComponent(pDeps, GroupLayout.DEFAULT_SIZE, 949, Short.MAX_VALUE))
 							.addGap(1)))
 					.addGap(37))
 		);
@@ -164,16 +166,43 @@ public class MainWindow extends JFrame {
 						.addComponent(btnInterpol)
 						.addComponent(btnClear)
 						.addComponent(cmbbxChooseTimeFirst, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(cmbbxChooseTimeSecond, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(chckbxChooseTime))
+						.addComponent(chckbxChooseTime)
+						.addComponent(cmbbxChooseTimeSecond, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(18)
-					.addComponent(pDeps, GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
+					.addComponent(pDeps, GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
 					.addGap(18)
 					.addComponent(pNormalDep, GroupLayout.PREFERRED_SIZE, 313, GroupLayout.PREFERRED_SIZE)
 					.addGap(47))
 		);
 		pDeps.setLayout(new BorderLayout(0, 0));
 		contentPane.setLayout(gl_contentPane);
+		
+		DataBaseInterface dbInterface = new DataBaseInterface();
+		String sql = buildSqlQuery("occupancy","volume");
+		XYSeries series = getDataSet(sql, dbInterface);
+		if (series != null)
+		{
+			XYSeriesCollection seriesCollection= new XYSeriesCollection();
+			ApproximationUnit au = new ApproximationUnit();
+			double[] polinom = au.LeastSquares(series.toArray(),3,series.getItemCount());
+			
+			XYSeries apprser = new XYSeries("approximation");
+			
+			for(double i = series.getMinX();i<=series.getMaxX();i+=500) {
+				apprser.add(i, (polinom[2]*i*i+polinom[1]*i)+polinom[0]);
+			}
+			seriesCollection.addSeries(apprser);
+			seriesCollection.addSeries(series);
+			
+			JFreeChart chart = plotPoints(seriesCollection, "occupancy", "volume");
+			ChartPanel chartPanel = new ChartPanel(chart);
+			chartPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+		    chartPanel.setBackground(Color.white);
+		    pDeps.removeAll();
+		    pDeps.add(chartPanel, BorderLayout.CENTER);
+			pDeps.validate();
+		}
+		dbInterface.disconnect();
 
 	}
 
@@ -181,14 +210,45 @@ public class MainWindow extends JFrame {
 	void createEvents()
 	{
 		//*Event handler for pressing button Dep1**
-		btnDep1.addActionListener(new ActionListener() {
+		/*btnDep1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				DataBaseInterface dbInterface = new DataBaseInterface();
-				String sql = buildSqlQuery("intensity","occupancy");
+				String sql = buildSqlQuery("occupancy","volume");
 				XYDataset dataset = getDataSet(sql, dbInterface);
 				if (dataset!=null)
 				{
-					JFreeChart chart = plotPoints(dataset, "intensity", "occupancy");
+					JFreeChart chart = plotPoints(dataset, "occupancy", "volume");
+					ChartPanel chartPanel = new ChartPanel(chart);
+					chartPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+				    chartPanel.setBackground(Color.white);
+				    pDeps.removeAll();
+				    pDeps.add(chartPanel, BorderLayout.CENTER);
+					pDeps.validate();
+				}
+				dbInterface.disconnect();
+			}
+		});*/
+		
+		cmbbxChooseLane.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DataBaseInterface dbInterface = new DataBaseInterface();
+				String sql = buildSqlQuery("occupancy","volume");
+				XYSeries series = getDataSet(sql, dbInterface);
+				if (series != null)
+				{
+					XYSeriesCollection seriesCollection= new XYSeriesCollection();
+					ApproximationUnit au = new ApproximationUnit();
+					double[] polinom = au.LeastSquares(series.toArray(),3,series.getItemCount());
+					
+					XYSeries apprser = new XYSeries("approximation");
+					
+					for(double i = series.getMinX();i<=series.getMaxX();i+=500) {
+						apprser.add(i, (polinom[2]*i*i+polinom[1]*i)+polinom[0]);
+					}
+					seriesCollection.addSeries(apprser);
+					seriesCollection.addSeries(series);
+					
+					JFreeChart chart = plotPoints(seriesCollection, "occupancy", "volume");
 					ChartPanel chartPanel = new ChartPanel(chart);
 					chartPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 				    chartPanel.setBackground(Color.white);
@@ -199,7 +259,39 @@ public class MainWindow extends JFrame {
 				dbInterface.disconnect();
 			}
 		});
-
+		
+		cmbbxChooseDate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DataBaseInterface dbInterface = new DataBaseInterface();
+				String sql = buildSqlQuery("occupancy","volume");
+				XYSeries series = getDataSet(sql, dbInterface);
+				if (series != null)
+				{
+					XYSeriesCollection seriesCollection= new XYSeriesCollection();
+					ApproximationUnit au = new ApproximationUnit();
+					double[] polinom = au.LeastSquares(series.toArray(),3,series.getItemCount());
+					
+					XYSeries apprser = new XYSeries("approximation");
+					
+					for(double i = series.getMinX();i<=series.getMaxX();i+=500) {
+						apprser.add(i, (polinom[2]*i*i+polinom[1]*i)+polinom[0]);
+					}
+					seriesCollection.addSeries(apprser);
+					seriesCollection.addSeries(series);
+					
+					
+					JFreeChart chart = plotPoints(seriesCollection, "occupancy", "volume");
+					ChartPanel chartPanel = new ChartPanel(chart);
+					chartPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+				    chartPanel.setBackground(Color.white);
+				    pDeps.removeAll();
+				    pDeps.add(chartPanel, BorderLayout.CENTER);
+					pDeps.validate();
+				}
+				dbInterface.disconnect();
+			}
+		});
+		
 		btnDep2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
@@ -210,7 +302,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		chckbxChooseTime.addActionListener(new ActionListener() {
+		/*chckbxChooseTime.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (cmbbxChooseTimeFirst.isEnabled() == true)
 				{
@@ -223,7 +315,7 @@ public class MainWindow extends JFrame {
 					cmbbxChooseTimeSecond.setEnabled(true);
 				}
 			}
-		});
+		});*/
 
 	}
 
@@ -232,7 +324,7 @@ public class MainWindow extends JFrame {
 	{
 		DataBaseInterface dbInterface = new DataBaseInterface();
 		String sql_lanes = "SELECT DISTINCT name FROM coursework.lane";
-		String sql_dates = "SELECT DISTINCT (CONVERT (lane.date, DATE)) FROM coursework.lane ORDER BY lane.date";
+		String sql_dates = "SELECT DISTINCT (CONVERT(lane.date, DATE)) FROM coursework.lane ORDER BY CONVERT(lane.date, DATE)";
 		try
 		{
 			PreparedStatement pstmt = dbInterface.connect().prepareStatement(sql_lanes);
@@ -289,9 +381,10 @@ public class MainWindow extends JFrame {
 		XYPlot plot = chart.getXYPlot();
 
 		XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesPaint(0, Color.RED);
-        renderer.setSeriesStroke(0, new BasicStroke(2.0f));
-        renderer.setSeriesLinesVisible(0, false);
+        renderer.setSeriesPaint(0, Color.CYAN);
+        renderer.setSeriesPaint(1, Color.RED);
+        renderer.setSeriesStroke(1, new BasicStroke(1.0f));
+        renderer.setSeriesLinesVisible(1, false);
         plot.setRenderer(renderer);
         plot.setBackgroundPaint(Color.white);
 
@@ -307,9 +400,9 @@ public class MainWindow extends JFrame {
 	}
 
 	//*Method that executes sql query and creates dataset from resultset**
-	private XYDataset getDataSet(String sql, DataBaseInterface dbInterface)
-	{
-		XYSeriesCollection dataset = null;
+	private XYSeries getDataSet(String sql, DataBaseInterface dbInterface)
+{
+		XYSeries series = new XYSeries("Dependency");
 		try
 		{
 			if ((Integer)cmbbxChooseTimeFirst.getSelectedItem() > (Integer)cmbbxChooseTimeSecond.getSelectedItem())
@@ -328,13 +421,10 @@ public class MainWindow extends JFrame {
 			}
 
 			ResultSet rs = pstmt.executeQuery();
-			XYSeries series = new XYSeries("Your orders");
 			while (rs.next())
 			{
 				series.add(rs.getFloat(1), rs.getFloat(2));
 			}
-	        dataset = new XYSeriesCollection();
-	        dataset.addSeries(series);
 			pstmt.close();
 		}
 		catch(SQLException ex)
@@ -346,35 +436,6 @@ public class MainWindow extends JFrame {
 		{
 			JOptionPane.showMessageDialog(null, "You have selected wrong time interval", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
-		return dataset;
-	}
-
-	private double[][] Approximation(double[][] xyTable, int basis)
-	{
-		double[][] result = new double[basis][basis+1];
-
-		for (int i = 0; i < basis; i++)
-  		{
-    		for (int j = 0; j < basis; j++)
-    		{
-      			result[i][j] = 0;
-		    }
-  		}
-
-		for (int i = 0; i < basis; i++)
-  		{
-    		for (int j = 0; j < basis; j++)
-    		{
-      			double sumA = 0, sumB = 0;
-      			for (int k = 0; k < xyTable.length / 2; k++)
-      			{
-        			sumA += Math.pow(xyTable[0][k], i) * Math.pow(xyTable[0][k], j);
-        			sumB += xyTable[1][k] * Math.pow(xyTable[0][k], i);
-      			}
-      			result[i][j] = sumA;
-      			result[i][basis] = sumB;
-    		}
-  		}
-  		return result;
-	}
+		return series;
+	}	
 }
