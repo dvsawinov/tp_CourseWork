@@ -18,7 +18,6 @@ public class WeatherAPI
 	String keyAPI;
 	String latitude;
 	String longtitude;
-	String date;
 	URL url;
 	HttpsURLConnection connection;
 	
@@ -28,10 +27,9 @@ public class WeatherAPI
 		keyAPI = ""; // Get your key here
 		latitude = "55.7522"; //Europe/Moscow
 		longtitude = "37.6156"; //Europe/Moscow
-		date = day;
 		
 		url = new URL(sUrl + keyAPI + "/" + latitude + "," 
-					 + longtitude +"," + date+"T"+"12:00:00"
+					 + longtitude +"," + day+"T"+"12:00:00"
 					 + "?exclude=flags");
 		connection = (HttpsURLConnection)url.openConnection();
 		connection.setRequestMethod("GET");

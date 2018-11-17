@@ -19,7 +19,7 @@ public class Server
 	{
 		System.out.println("Program is running");
 		// Source directory
-		File dir = new File("D://CourseWork//Logs");
+		File dir = new File("D://tp_CourseWork//Logs");
 		if(dir.isDirectory())
 		{
 			for(File item: dir.listFiles())

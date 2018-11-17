@@ -41,7 +41,6 @@ public class SqlConnection
 			connect = DriverManager.getConnection(url,user,password);
 			stmt = connect.createStatement();
 			Continue = needToInsertLane(lanes.get(0),lanes.get(lanes.size()-1));
-			needToInsertWeather(lanes.get(0));
 		 } 
 		 catch (SQLException e) 
 		 {
@@ -50,6 +49,7 @@ public class SqlConnection
 		 }
 		 if(Continue)
 		 {
+			 needToInsertWeather(lanes.get(0));
 			 System.out.println("Inserting the lane data...");
 			 for(int i=0;i<lanes.size();i++)
 			 {
