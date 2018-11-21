@@ -1,5 +1,7 @@
 package sql;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,11 +24,13 @@ public class SqlConnection
 	 Connection connect; 
 	 Statement stmt;
 	 
-	 public SqlConnection()
+	 public SqlConnection() throws SQLException
 	 {
 		 url = "jdbc:mysql://localhost:3306/coursework?serverTimezone=Europe/Moscow";
 		 user = "root";
 		 password = "root123"; 
+		 connect = DriverManager.getConnection(url,user,password);
+		 stmt = connect.createStatement();
 	 }
 	 
 	 // Get the insert query to database
@@ -38,8 +42,6 @@ public class SqlConnection
 		 boolean Continue = false;
 		 try 
 		 {
-			connect = DriverManager.getConnection(url,user,password);
-			stmt = connect.createStatement();
 			Continue = needToInsertLane(lanes.get(0),lanes.get(lanes.size()-1));
 		 } 
 		 catch (SQLException e) 
@@ -150,4 +152,36 @@ public class SqlConnection
 		}
 	 }
 	 
+	 public	void exportToFile() throws SQLException, IOException
+	 {
+		 System.out.println("Exporting...");
+		 String columns = "lane.name,lane.volume,lane.occupancy,lane.speed,lane.distance,lane.date,"
+		 		+ "weather.precipType,weather.timeOfDay";
+		 ResultSet rs = stmt.executeQuery("SELECT " + columns + " FROM coursework.lane INNER JOIN "
+		 		+ "coursework.weather ON CONVERT(lane.date,DATE) = CONVERT(weather.date,DATE) AND "
+		 		+ "hour(lane.date) = hour(weather.date);");
+		 File file = new File("D:\\Lanes.txt");
+		 FileWriter writer = new FileWriter(file,false);
+		 
+		 writer.write(String.format("%-9s %-9s %-9s %-9s %-9s %-23s %-14s %-10s %n", 
+				 "NAME","VOLUME","OCCUPANCY","SPEED","DISTANCE","DATE","PRECIPITATION","TIMEOFDAY"));
+		 while(rs!=null && rs.next())
+		 {
+			 writer.write(String.format("%-10s", rs.getString("name")));
+			 writer.write(String.format("%-10s", rs.getString("volume")));
+			 writer.write(String.format("%-10s", rs.getString("occupancy")));
+			 writer.write(String.format("%-10s", rs.getString("speed")));
+			 writer.write(String.format("%-10s", rs.getString("distance")));
+			 writer.write(String.format("%-24s", rs.getString("date")));
+			 writer.write(String.format("%-15s", rs.getString("precipType")));
+			 writer.write(String.format("%-10s", rs.getString("timeOfDay")));
+			 writer.write("\r\n");
+		 }
+		 System.out.println("Export completed");
+		 writer.close();
+		 rs.close();
+		 
+		 stmt.close();
+		 connect.close();
+	 }
 }

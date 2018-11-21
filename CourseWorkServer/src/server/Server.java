@@ -18,8 +18,28 @@ public class Server
 	public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException, SQLException, JSONException
 	{
 		System.out.println("Program is running");
-		// Source directory
-		File dir = new File("D://tp_CourseWork//Logs");
+		System.out.println("\n"+ "1:Insert to database" + "\n" + "2:Export to file");
+		Scanner scan = new Scanner(System.in);
+		int key = scan.nextInt();
+		switch(key)
+		{
+		case 1:
+			insert();
+			break;
+		case 2:
+			new SqlConnection().exportToFile();
+			break;
+		default:
+			break;
+		}	
+		System.out.println("\n"+"Program completed");
+	}
+	
+	static void insert() throws ClassNotFoundException, SQLException, IOException, JSONException, ParseException
+	{
+		System.out.println("Please enter the path to the folder with log files");
+		Scanner scan = new Scanner(System.in);
+		File dir = new File(scan.next());
 		if(dir.isDirectory())
 		{
 			for(File item: dir.listFiles())
@@ -35,7 +55,10 @@ public class Server
 				}
 			}
 		}
-		System.out.println("\n"+"Program completed");
+		else
+		{
+			System.out.println("No such directory. Please check input data");
+		}
 	}
 	
 	//Read from file and add to ArrayList new Lane object
@@ -69,5 +92,5 @@ public class Server
 		{
 			return "";
 		}
-	}
+	}	
 }

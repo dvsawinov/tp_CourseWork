@@ -17,8 +17,7 @@ public class Lane
 		name = str[1];
 		volume = Float.parseFloat(str[2].replace(',', '.'));
 		occupancy = (float) (1000*Float.parseFloat(str[3].replace(',', '.'))/5.7);
-		distance = Float.parseFloat(str[14].replace(',', '.'));
-		if(distance != 0 && occupancy != 0)
+		if(occupancy != 0)
 		{	
 			speed = Float.parseFloat(str[5].replace(',', '.'));	
 		}
@@ -26,6 +25,7 @@ public class Lane
 		{
 			speed = 0;
 		}
+		distance = Float.parseFloat(str[14].replace(',', '.')) * speed * 1000/3600;
 		date = str[16] +' '+ str[17];	
 	}
 
