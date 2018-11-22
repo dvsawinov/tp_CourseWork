@@ -8,7 +8,7 @@ public class Lane
 	float volume; // p
 	float occupancy; // Q
 	float speed; // V
-	float distance; // d (headway)
+	float distance; // d (headway*speed*1000/3600)
 	String date; // date
 	
 	// Parse into new Lane object
@@ -20,12 +20,13 @@ public class Lane
 		if(occupancy != 0)
 		{	
 			speed = Float.parseFloat(str[5].replace(',', '.'));	
+			distance = Float.parseFloat(str[14].replace(',', '.')) * speed * 1000/3600; 
 		}
 		else
 		{
 			speed = 0;
-		}
-		distance = Float.parseFloat(str[14].replace(',', '.')) * speed * 1000/3600;
+			distance = 0;
+		}	
 		date = str[16] +' '+ str[17];	
 	}
 
