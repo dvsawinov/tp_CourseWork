@@ -27,7 +27,7 @@ public class Weather
 		{
 			precipType = day.optString("precipType");
 		}*/
-		// 23°F = -5°Ñ; 35.6°F = 2°Ñ
+		// 23°F = -5°C; 35.6°F = 2°C
 		else if(temperature >= 23 && temperature <= 35.6)
 		{
 			precipType = "icy";
@@ -55,7 +55,7 @@ public class Weather
 		return "(" + 
 				"'" + df.format(time) 	+ "'" + "," + 
 				"'" + this.precipType	+ "'" + "," +			
-				"'" + this.timeOfDay + "'" +")";
+				"'" + this.timeOfDay 	+ "'" +")";
 	}
 
 }

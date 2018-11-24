@@ -24,35 +24,33 @@ public class SqlConnection
 	 Connection connect; 
 	 Statement stmt;
 	 
-	 public SqlConnection() throws SQLException
+	 public SqlConnection()
 	 {
 		 url = "jdbc:mysql://localhost:3306/coursework?serverTimezone=Europe/Moscow";
 		 user = "root";
 		 password = "root123"; 
-		 connect = DriverManager.getConnection(url,user,password);
-		 stmt = connect.createStatement();
+		 try
+		 {
+			 connect = DriverManager.getConnection(url,user,password);
+			 stmt = connect.createStatement();
+		 }
+		 catch(SQLException e)
+		 {
+			 e.printStackTrace();
+		 }
 	 }
 	 
 	 // Get the insert query to database
-	 public void insert(ArrayList<Lane> lanes) throws ClassNotFoundException, SQLException, IOException, JSONException
+	 public void importLanes(ArrayList<Lane> lanes) throws ClassNotFoundException, SQLException, IOException, JSONException
 	 {	 
 		 Class.forName("com.mysql.cj.jdbc.Driver");
 		 //Query text
 		 String insertQuery = "INSERT INTO coursework.lane VALUES";
-		 boolean Continue = false;
-		 try 
-		 {
-			Continue = needToInsertLane(lanes.get(0),lanes.get(lanes.size()-1));
-		 } 
-		 catch (SQLException e) 
-		 {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		 }
+		 boolean Continue = needToImportLanes(lanes.get(0),lanes.get(lanes.size()-1));
 		 if(Continue)
 		 {
-			 needToInsertWeather(lanes.get(0));
-			 System.out.println("Inserting the lane data...");
+			 needToImportWeather(lanes.get(0));
+			 System.out.println("Importing the lane data...");
 			 for(int i=0;i<lanes.size();i++)
 			 {
 				 insertQuery += lanes.get(i).getInsertQuery();
@@ -68,7 +66,7 @@ public class SqlConnection
 			 try 
 			 {
 				stmt.executeUpdate(insertQuery);
-				System.out.println("Insertion of the lane data completed");
+				System.out.println("Importing of the lane data completed");
 			 } 
 			 catch (SQLException e) 
 			 {
@@ -80,7 +78,7 @@ public class SqlConnection
 	 }
 	 
 	 // 
-	 public void needToInsertWeather(Lane ln) throws SQLException, IOException, JSONException
+	 public void needToImportWeather(Lane ln) throws SQLException, IOException, JSONException
 	 {
 		 System.out.println("Checking the weather data...");
 		 ResultSet rs = stmt.executeQuery("SELECT date FROM coursework.weather where date="
@@ -90,7 +88,7 @@ public class SqlConnection
 			String insertQuery = "INSERT INTO coursework.weather VALUES";
 			System.out.println("No weather data for the " + ln.date.substring(0,10)  +" day");
 			ArrayList<Weather> weathers = new WeatherAPI(ln.date.substring(0,10)).getWeatherInfo();
-			System.out.println("Inserting the weather data...");
+			System.out.println("Importing the weather data...");
 			for(int i=0;i<weathers.size();i++)
 			{
 				 insertQuery += weathers.get(i).getInsertQuery();
@@ -104,15 +102,14 @@ public class SqlConnection
 				 }			 
 			}
 			stmt.executeUpdate(insertQuery);
-			System.out.println("Insertion of the weather data completed");
+			System.out.println("Importing of the weather data completed");
 			return;
 		 }
 		 System.out.println("Checking the weather data completed");		 
 	 }
-	 
-	 
+	  
 	 // Check for re-insertion source log file by date on the first line
-	 boolean needToInsertLane(Lane first,Lane last) throws SQLException
+	 boolean needToImportLanes(Lane first,Lane last) throws SQLException
 	 {
 		 ResultSet rs = stmt.executeQuery("SELECT date FROM coursework.lane where date="
 				 						 + "'" + first.date +"'"+";");
@@ -177,11 +174,13 @@ public class SqlConnection
 			 writer.write(String.format("%-10s", rs.getString("timeOfDay")));
 			 writer.write("\r\n");
 		 }
-		 System.out.println("Export completed");
+		 System.out.println("Exporting completed");
 		 writer.close();
 		 rs.close();
 		 
 		 stmt.close();
 		 connect.close();
 	 }
+
 }
+
