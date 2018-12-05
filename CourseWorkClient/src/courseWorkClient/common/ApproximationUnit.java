@@ -1,7 +1,5 @@
 package courseWorkClient.common;
 
-import org.jfree.data.xy.XYSeries;
-
 public class ApproximationUnit {
 
     private double[][] matrix;
@@ -95,9 +93,6 @@ public class ApproximationUnit {
  
     public double[] LeastSquares(double[][] xyTable, int basis, int n){
         this.matrix = makeSystem(xyTable, basis, n);
-        for(int i=0; i<basis; i++)
-            for(int j=0; j<basis; j++)
-                System.out.println(matrix[i][j]);
         double[] result = Gauss(basis, basis + 1);
         return result;
     }

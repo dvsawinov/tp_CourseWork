@@ -2,16 +2,12 @@ package courseWorkClient.common;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 
 public class DataBaseInterface {
 	private static final String url = "jdbc:mysql://localhost:3306/coursework?useSSL=false&serverTimezone=Europe/Moscow";
 	private static final String user = "root";
-	private static final String password = "vurgun12";//enter your password here
+	private static final String password = "root123";//enter your password here
 	static Connection connection;
 	
 	public Connection connect()
